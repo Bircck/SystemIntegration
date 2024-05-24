@@ -1,0 +1,13 @@
+// Vending machine with cancel option
+
+// Definition of vending machine process
+VM := coin? . (askEsp? . VM1 + askAm? . VM2 + cancel? . VM)
+VM1 := espCoffee! . VM
+VM2 := amCoffee! . VM
+
+// User inserting a coin and cancelling
+User1 := coin! . cancel! . 0
+
+// The initial process
+(VM | User1) \ {coin, askEsp, askAm, espCoffee, amCoffee, cancel}
+

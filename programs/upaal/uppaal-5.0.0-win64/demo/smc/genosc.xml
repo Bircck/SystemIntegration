@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.5//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_5.dtd'>
+<nta>
+	<declaration>
+/* Example used in
+ * Statistical Model Checking for Stochastic Hybrid Systems.
+ * Alexandre David, Dehui Du, Kim G. Larsen, Axel Legay,
+ * Marius Mikucionis, Danny Bøgsted Poulsen, and Sean Sedwards.
+ * 1st International Workshop on Hybrid Systems and Biology 2012,
+ * pages 122-136, EPTCS volume 92.
+ */
+
+int DA=1, D_A=0, DR=1, D_R=0, MA=0, MR=0, A=0, R=0, C=0;
+</declaration>
+	<template>
+		<name x="5" y="5">r1</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id0" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">DA*50</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id1">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-20" y="-100">DA&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">MA++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r2</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id2" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">A*DA*1</label>
+		</location>
+		<init ref="id2"/>
+		<transition id="id3">
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-20" y="-100">A&gt;0 &amp;&amp; DA&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">DA--, D_A++, A--</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r3</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id4" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">D_A*500</label>
+		</location>
+		<init ref="id4"/>
+		<transition id="id5">
+			<source ref="id4"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-20" y="-100">D_A&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">MA++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r4</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id6" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">DR:100</label>
+		</location>
+		<init ref="id6"/>
+		<transition id="id7">
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-20" y="-100">DR&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">MR++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r5</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id8" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">D_R*50</label>
+		</location>
+		<init ref="id8"/>
+		<transition id="id9">
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-20" y="-100">D_R&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">MR++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r6</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id10" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">MA*50</label>
+		</location>
+		<init ref="id10"/>
+		<transition id="id11">
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-20" y="-100">MA&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">A++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r7</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id12" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">MR*5</label>
+		</location>
+		<init ref="id12"/>
+		<transition id="id13">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-20" y="-100">MR&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">R++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r8</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id14" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">A*R*2</label>
+		</location>
+		<init ref="id14"/>
+		<transition id="id15">
+			<source ref="id14"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-20" y="-100">A&gt;0 &amp;&amp; R&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">A--, R--, C++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r9</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id16" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">C*1</label>
+		</location>
+		<init ref="id16"/>
+		<transition id="id17">
+			<source ref="id16"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-20" y="-100">C&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">R++, C--</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r10</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id18" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">A*1</label>
+		</location>
+		<init ref="id18"/>
+		<transition id="id19">
+			<source ref="id18"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-20" y="-100">A&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">A--</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r11</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id20" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">R*2:10</label>
+		</location>
+		<init ref="id20"/>
+		<transition id="id21">
+			<source ref="id20"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-20" y="-100">R&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">R--</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r12</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id22" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">MA*10</label>
+		</location>
+		<init ref="id22"/>
+		<transition id="id23">
+			<source ref="id22"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-20" y="-100">MA&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">MA--</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r13</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id24" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">MR*5:10</label>
+		</location>
+		<init ref="id24"/>
+		<transition id="id25">
+			<source ref="id24"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-20" y="-100">MR&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">MR--</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r14</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id26" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">D_R*100</label>
+		</location>
+		<init ref="id26"/>
+		<transition id="id27">
+			<source ref="id26"/>
+			<target ref="id26"/>
+			<label kind="guard" x="-20" y="-100">D_R&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">DR++, D_R--, A++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r15</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id28" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">A*DR*1</label>
+		</location>
+		<init ref="id28"/>
+		<transition id="id29">
+			<source ref="id28"/>
+			<target ref="id28"/>
+			<label kind="guard" x="-20" y="-100">A&gt;0 &amp;&amp; DR&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">DR--, D_R++, A--</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">r16</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id30" x="0" y="0">
+			<label kind="exponentialrate" x="-20" y="30">D_A*50</label>
+		</location>
+		<init ref="id30"/>
+		<transition id="id31">
+			<source ref="id30"/>
+			<target ref="id30"/>
+			<label kind="guard" x="-20" y="-100">D_A&gt;0</label>
+			<label kind="assignment" x="-20" y="-70">DA++, D_A--, A++</label>
+			<nail x="-30" y="-30"/>
+			<nail x="30" y="-30"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+// List one or more processes to be composed into a system.
+system r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16;
+
+// Model of genetic oscillator from
+// Vilar, Kueh, Barkai, Leibler: Mechanisms of noise-resistance in genetic oscillators, PNAS, 2002
+</system>
+	<queries>
+		<query>
+			<formula>simulate [&lt;=100] { DA, D_A, DR, D_R, MA, MR, A, R, C}</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=100; 10] (max:A)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=100; 10] (max:R)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=100; 10] (max:C)</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Run this script to start UPPAAL
+
+# Default options if needed.
+# Add -Duppaal.extra if you want to force extra features.
+# JAVA_DEF="-Duppaal.extra"
+#JAVA_DEF=-Duppaal.lsc
+#JAVA_DEF=
+
+# Force language if LANG is defined.
+if [ ! -z "$LANG" ]; then
+  JAVA_DEF="$JAVA_DEF -Duser.language=${LANG/_*/}"
+fi
+
+# Locate the installation path:
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DNAME=$(dirname "$SOURCE")
+  HERE=$(cd -P "$DNAME" >/dev/null 2>&1 && pwd)
+  SOURCE=$(readlink "$SOURCE")
+  [[ "$SOURCE" != /* ]] && SOURCE="$HERE/$SOURCE"
+done
+DNAME=$(dirname "$SOURCE")
+HERE=$(cd -P "$DNAME" > /dev/null 2>&1 && pwd)
+
+JAR="$HERE/uppaal.jar"
+
+if [[ "$DISPLAY" != ":"* ]]; then
+    # No antialias if remote execution (better performance).
+    EXTRAOPT="--no-antialias"
+fi
+
+# Start.
+if [ -z "$NOJAR" ]; then
+  exec java $JAVA_DEF $EXTRADEF -jar "$JAR" $EXTRAOPT "$@"
+else
+  exec java $JAVA_DEF $EXTRADEF -classpath "$JAR" UPPAAL $EXTRAOPT "$@"
+fi

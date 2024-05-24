@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+</declaration>
+	<template>
+		<name>GateAuto</name>
+		<location id="id0" x="-8" y="93">
+		</location>
+		<location id="id1" x="-102" y="195">
+			<committed/>
+		</location>
+		<location id="id2" x="93" y="195">
+			<committed/>
+		</location>
+		<location id="id3" x="-136" y="93">
+			<committed/>
+		</location>
+		<location id="id4" x="-136" y="-119">
+			<committed/>
+		</location>
+		<location id="id5" x="-8" y="17">
+			<committed/>
+		</location>
+		<location id="id6" x="-8" y="-51">
+		</location>
+		<location id="id7" x="-8" y="-119">
+		</location>
+		<location id="id8" x="102" y="-17">
+			<committed/>
+		</location>
+		<init ref="id7"/>
+		<transition id="id9">
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<nail x="102" y="-119"/>
+		</transition>
+		<transition id="id10">
+			<source ref="id4"/>
+			<target ref="id3"/>
+		</transition>
+		<transition id="id11">
+			<source ref="id7"/>
+			<target ref="id4"/>
+		</transition>
+		<transition id="id12">
+			<source ref="id5"/>
+			<target ref="id0"/>
+		</transition>
+		<transition id="id13">
+			<source ref="id6"/>
+			<target ref="id5"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id7"/>
+			<target ref="id6"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id0"/>
+			<target ref="id8"/>
+			<nail x="102" y="93"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id3"/>
+			<target ref="id0"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id1"/>
+			<target ref="id2"/>
+		</transition>
+		<transition id="id18">
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
+		<transition id="id19">
+			<source ref="id2"/>
+			<target ref="id0"/>
+		</transition>
+	</template>
+	<template>
+		<name>QueueAuto</name>
+		<location id="id20" x="0" y="0">
+			<committed/>
+		</location>
+		<location id="id21" x="0" y="-153">
+		</location>
+		<init ref="id21"/>
+		<transition id="id22">
+			<source ref="id21"/>
+			<target ref="id20"/>
+			<nail x="51" y="-68"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<nail x="-51" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Template</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id24" x="0" y="0">
+		</location>
+		<init ref="id24"/>
+	</template>
+	<system>// Place template instantiations here.
+Process = Template();
+// List one or more processes to be composed into a system.
+system Process, GateAuto, QueueAuto;
+</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>

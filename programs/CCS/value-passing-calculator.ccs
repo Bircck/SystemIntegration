@@ -1,0 +1,20 @@
+// Defining a range of values
+range Int := 0..5
+
+Calculator := number?x:Int . number?y:Int .result!(x*y) . Calculator
+
+Client1 := number!1 . number!2 . result?z . done!z
+
+Client2 := number!3 . number!5 . result?z . done!z
+
+/////////////////////////////////////////////////////////////////////
+// The initial process (uncomment only one of the following)
+
+// Calculator alone
+Calculator
+
+// Calculator with client
+// (Calculator | Client1) \ {number, result}
+
+// Calculator with two conflicting clients
+// (Calculator | Client1 | Client2) \ {number, result}

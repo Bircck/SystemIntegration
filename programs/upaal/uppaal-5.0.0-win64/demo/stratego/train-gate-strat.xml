@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.5//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_5.dtd'>
+<nta>
+	<declaration>/**
+ * The train-gate example adjusted by Kim Guldstrand Larsen to demostrate Stratego features.
+ * The original train-gate example has been published in
+ * "Automatic Verification of Real-Time Communicating Systems by Constraint Solving", 
+ * by Wang Yi, Paul Pettersson and Mats Daniels. In Proceedings of the 7th International
+ * Conference on Formal Description Techniques, pages 223-238, North-Holland. 1994.
+ */
+
+const int N = 4;         // # trains
+typedef int[0,N-1] id_t;
+
+broadcast chan        appr[N], stop[N], leave[N];
+broadcast  chan go[N];
+
+clock time;
+</declaration>
+	<template>
+		<name x="40" y="16">Train</name>
+		<parameter>const id_t id</parameter>
+		<declaration>clock x;
+hybrid clock z;
+</declaration>
+		<location id="id0" x="96" y="96">
+			<name x="48" y="80">Safe</name>
+			<label kind="invariant" x="76" y="59">z'==0</label>
+			<label kind="exponentialrate" x="-17" y="42">(id+1):N*N</label>
+		</location>
+		<location id="id1" x="176" y="320" color="#00ff00">
+			<name x="192" y="328">Stop</name>
+		</location>
+		<location id="id2" x="256" y="96" color="#0000ff">
+			<name x="272" y="68">Cross</name>
+			<label kind="invariant" x="272" y="85">x&lt;=5 &amp;&amp;
+z'==0</label>
+		</location>
+		<location id="id3" x="96" y="232" color="#ffff00">
+			<name x="32" y="216">Appr</name>
+			<label kind="invariant" x="32" y="232">x&lt;=20</label>
+		</location>
+		<location id="id4" x="256" y="232" color="#ffa500">
+			<name x="272" y="216">Start</name>
+			<label kind="invariant" x="272" y="232">x&lt;= 15</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id5" controllable="false">
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="184" y="160">x&gt;=10</label>
+			<label kind="assignment" x="184" y="176">x=0</label>
+		</transition>
+		<transition id="id6">
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="51" y="263">stop[id]?</label>
+		</transition>
+		<transition id="id7" controllable="false">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="170" y="59">x&gt;=3</label>
+			<label kind="synchronisation" x="144" y="76">leave[id]!</label>
+		</transition>
+		<transition id="id8" controllable="false">
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="25" y="119">appr[id]!</label>
+			<label kind="assignment" x="34" y="136">x=0</label>
+		</transition>
+		<transition id="id9" controllable="false">
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="guard" x="264" y="144">x&gt;=7</label>
+			<label kind="assignment" x="264" y="160">x=0</label>
+		</transition>
+		<transition id="id10">
+			<source ref="id1"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="229" y="263">go[id]?</label>
+			<label kind="assignment" x="224" y="296">x=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>GateG</name>
+		<declaration>clock z;</declaration>
+		<location id="id11" x="-127" y="-93">
+			<name x="-119" y="-119">Idle</name>
+		</location>
+		<location id="id12" x="-127" y="34">
+			<name x="-119" y="42">Active</name>
+			<committed/>
+		</location>
+		<init ref="id11"/>
+		<transition id="id13">
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<nail x="-153" y="17"/>
+			<nail x="-153" y="-68"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="select" x="-280" y="-51">e:id_t</label>
+			<label kind="synchronisation" x="-280" y="-34">go[e]!</label>
+			<nail x="-280" y="34"/>
+			<nail x="-280" y="-93"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="select" x="-221" y="-51">e:id_t</label>
+			<label kind="synchronisation" x="-221" y="-34">stop[e]!</label>
+			<nail x="-221" y="17"/>
+			<nail x="-221" y="-68"/>
+		</transition>
+		<transition id="id16" controllable="false">
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="select" x="-25" y="-51">e:id_t</label>
+			<label kind="synchronisation" x="-25" y="-34">leave[e]?</label>
+			<nail x="-34" y="-93"/>
+			<nail x="-34" y="34"/>
+		</transition>
+		<transition id="id17" controllable="false">
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="select" x="-119" y="-51">e:id_t</label>
+			<label kind="synchronisation" x="-119" y="-34">appr[e]?</label>
+		</transition>
+	</template>
+	<system>system Train, GateG;
+
+
+</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment>// Evaluate system behavior without strategies</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=200; 20] {
+  Train(0).Safe + 2*Train(0).Appr + 3*Train(0).Stop + 4*Train(0).Start + 5*Train(0).Cross,
+  5+Train(1).Safe + 2*Train(1).Appr + 3*Train(1).Stop + 4*Train(1).Start + 5*Train(1).Cross,
+  10+Train(2).Safe + 2*Train(2).Appr + 3*Train(2).Stop + 4*Train(2).Start + 5*Train(2).Cross,
+  15+Train(3).Safe + 2*Train(3).Appr + 3*Train(3).Stop + 4*Train(3).Start + 5*Train(3).Cross
+}</formula>
+			<comment>Where are the trains most of the time?
+Check and right-click the query to inspect the plot.
+Expect trajectories all over the range from 1 through 5, more-or-less uniform.</comment>
+		</query>
+		<query>
+			<formula>E[&lt;=200; 500] (max: Train(0).z)     // estimate total Waiting Time for Train(0)</formula>
+			<comment>Expect ~116.7.
+Right-click the query to inspect the distribution plot.</comment>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// LEARN Fast Controller for Train(0)</comment>
+		</query>
+		<query>
+			<formula>strategy GoFast = minE(Train(0).z) [&lt;=200]: &lt;&gt; time&gt;=200   // LEARN: minimize expected Total Waiting Time for Train(0)</formula>
+			<comment>Expect success.
+The resulting strategy can be used only in SMC queries.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=200] {
+  Train(0).Safe + 2*Train(0).Appr + 3*Train(0).Stop + 4*Train(0).Start + 5*Train(0).Cross,
+  5+Train(1).Safe + 2*Train(1).Appr + 3*Train(1).Stop + 4*Train(1).Start + 5*Train(1).Cross,
+  10+Train(2).Safe + 2*Train(2).Appr + 3*Train(2).Stop + 4*Train(2).Start + 5*Train(2).Cross,
+  15+Train(3).Safe + 2*Train(3).Appr + 3*Train(3).Stop + 4*Train(3).Start + 5*Train(3).Cross
+} under GoFast</formula>
+			<comment>Simulate under GoFast.
+Expect success with 1 simulation trajectory plot (right-click on the query to display)</comment>
+		</query>
+		<query>
+			<formula>E[&lt;=200; 500] (max: Train(0).z) under GoFast   // Estimate total Waiting Time of Train(0) using GoFast</formula>
+			<comment>Expect ~84.8 time units, which is much better than 116.7 with no strategy.</comment>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// Evaluate SAFETY of the original system with non-deterministic gate</comment>
+		</query>
+		<query>
+			<formula>A[] forall(i:id_t) forall(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross imply i == j</formula>
+			<comment>Mutual exclusion property (no two trains in Cross at the same time).
+Expect: NO, unsatisfied.
+The query also loads a witness counter-example trace into Symbolic Simulator because Diagnostic Trace is enabled in the query options.</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>simulate [&lt;=200] {
+  Train(0).Safe + 2*Train(0).Appr + 3*Train(0).Stop + 4*Train(0).Start + 5*Train(0).Cross,
+  5+Train(1).Safe + 2*Train(1).Appr + 3*Train(1).Stop + 4*Train(1).Start + 5*Train(1).Cross,
+  10+Train(2).Safe + 2*Train(2).Appr + 3*Train(2).Stop + 4*Train(2).Start + 5*Train(2).Cross,
+  15+Train(3).Safe + 2*Train(3).Appr + 3*Train(3).Stop + 4*Train(3).Start + 5*Train(3).Cross,
+  21*exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)
+}</formula>
+			<comment>Show train trajectories and mark the collisions when two trains arrive at Cross at the same time.
+Expect lots of progress for all trains also some collisions.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=200; 100] {
+  Train(0).Safe + 2*Train(0).Appr + 3*Train(0).Stop + 4*Train(0).Start + 5*Train(0).Cross,
+  5+Train(1).Safe + 2*Train(1).Appr + 3*Train(1).Stop + 4*Train(1).Start + 5*Train(1).Cross,
+  10+Train(2).Safe + 2*Train(2).Appr + 3*Train(2).Stop + 4*Train(2).Start + 5*Train(2).Cross,
+  15+Train(3).Safe + 2*Train(3).Appr + 3*Train(3).Stop + 4*Train(3).Start + 5*Train(3).Cross
+} : 1 : exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)</formula>
+			<comment>Find trajectory of train locations violating the mutual exclusion property</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000] (&lt;&gt; exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j))</formula>
+			<comment>Estimate probability of violating mutual exclusion property (some two trains at Cross at the same time).
+Expect close to 100%, i.e. eventually some two trains will collide in the crossing.
+Cumulative Probability Distribution (right-click on the query) shows that crash happens after 39.8 time units on average.</comment>
+			<option key="--alpha" value="0.01"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula>A[] !deadlock  // Can the system continue running randomly?</formula>
+			<comment>Expect NO, unsatisfied, the trace is loaded into Symbolic Simulator reveals that it may starve when all trains are stopped.</comment>
+			<option key="--diagnostic" value="1"/>
+		</query>
+		<query>
+			<formula>E&lt;&gt; !forall (i:id_t) Train(i).Stop    // Can all trains be stopped?</formula>
+			<comment>System may starve if all trains are stopped.
+Expect a trace leading to situation where all trains are stopped.</comment>
+			<option key="--diagnostic" value="1"/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=10000] (&lt;&gt; forall (i:id_t) Train(i).Stop)   // Probability of starvation</formula>
+			<comment>Expect close to 100%, i.e. it may take long time, but eventually all trains will be stopped and the system will starve.
+Cumulative Probability Distribution plot shows that starvation is reached in ~1333 time units on average.</comment>
+			<option key="--alpha" value="0.05"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// Evaluate SAFETY of Fast Controller for Train(0)</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=200] {
+  Train(0).Safe + 2*Train(0).Appr + 3*Train(0).Stop + 4*Train(0).Start + 5*Train(0).Cross,
+  5+Train(1).Safe + 2*Train(1).Appr + 3*Train(1).Stop + 4*Train(1).Start + 5*Train(1).Cross,
+  10+Train(2).Safe + 2*Train(2).Appr + 3*Train(2).Stop + 4*Train(2).Start + 5*Train(2).Cross,
+  15+Train(3).Safe + 2*Train(3).Appr + 3*Train(3).Stop + 4*Train(3).Start + 5*Train(3).Cross,
+  21*exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)
+} under GoFast</formula>
+			<comment>Display train trajectories with collisions
+Expect lots of progress for all trains and some collisions</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=200] (&lt;&gt; exists (i : id_t) exists (j : id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)) under GoFast &gt;= 
+Pr[&lt;=200] (&lt;&gt; exists (i : id_t) exists (j : id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j))</formula>
+			<comment>Compare safety of the GoFast strategy with no strategy.
+Expect YES, satisfied.
+Comparison plot shows 0.5 up to 11 time units, meaning that it could not distinguish probabilities,
+than it shows 1, meaning that the probability under GoFast is greater, i.e. train crash is even more likely.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=200] (&lt;&gt; exists (i : id_t) exists (j : id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)) under GoFast   // Probability of violating MUTEX using GoFast.</formula>
+			<comment>Probability of violating MUTEX under GoFast.
+Expect close to 100%.
+Cummulative Probability Distribution plot shows that time to crash is 25.7 time units on average, which is shorter than 39.8 without strategy</comment>
+			<option key="--alpha" value="0.005"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=200] (&lt;&gt; forall (i:id_t) Train(i).Stop) under GoFast  // Probability of starvation using GoFast</formula>
+			<comment>What is the probability of starvation?</comment>
+			<option key="--alpha" value="0.01"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// Synthesis of Safety Controller</comment>
+		</query>
+		<query>
+			<formula>strategy GoSafe = control: A[] forall(i:id_t) forall(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross imply i == j</formula>
+			<comment>Synthesize SAFE strategy to ensure MUTEX.
+Expect success.
+The resulting strategy can be used in symbolic (E&lt;&gt;, A[] etc), SMC, TIGA and learning queries.</comment>
+		</query>
+		<query>
+			<formula>A[] forall(i:id_t) forall(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross imply i == j under GoSafe  // Validate MUTEX property</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] !forall (i:id_t) Train(i).Stop under GoSafe     // Check for LIVELOCK</formula>
+			<comment>Expect NO, unsatisfied: trace reveals that the system may starve when all trains are stopped.</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>A[] !deadlock under GoSafe                          // Check for LIVELOCK</formula>
+			<comment/>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>strategy GoSafeLive = control: A[] (forall(i:id_t) forall(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross imply i == j) &amp;&amp; !forall(i:id_t) Train(i).Stop</formula>
+			<comment>Synthesize SAFE strategy to ensure MUTEX and avoid STARVATION
+Expect success.
+The resulting strategy can be used in symbolic (E&lt;&gt;, A[] etc), SMC, TIGA and learning queries.</comment>
+		</query>
+		<query>
+			<formula>A[] forall(i:id_t) forall(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross imply i == j under GoSafeLive  // Validate MUTEX property</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] !forall(i:id_t) Train(i).Stop under GoSafeLive  // Check for LIVELOCK</formula>
+			<comment>Avoid starvation when all trains are in Stop</comment>
+		</query>
+		<query>
+			<formula>A[] !deadlock under GoSafeLive                      // Check for LIVELOCK</formula>
+			<comment>Expect YES, satisfied</comment>
+			<option key="--diagnostic" value="2"/>
+		</query>
+		<query>
+			<formula>simulate [&lt;=200] {
+  Train(0).Safe + 2*Train(0).Appr + 3*Train(0).Stop + 4*Train(0).Start + 5*Train(0).Cross,
+  5+Train(1).Safe + 2*Train(1).Appr + 3*Train(1).Stop + 4*Train(1).Start + 5*Train(1).Cross,
+  10+Train(2).Safe + 2*Train(2).Appr + 3*Train(2).Stop + 4*Train(2).Start + 5*Train(2).Cross,
+  15+Train(3).Safe + 2*Train(3).Appr + 3*Train(3).Stop + 4*Train(3).Start + 5*Train(3).Cross,
+  21*exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)
+} under GoSafeLive</formula>
+			<comment>Simulate the state of all Trains using Safe strategy.
+Expect less progress for all the trains, but no collisions.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=200] (&lt;&gt; exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)) under GoSafeLive</formula>
+			<comment>Probability of violating MUTEX under Safe
+Expect &lt;0.5% with 99% confidence level.</comment>
+			<option key="--alpha" value="0.01"/>
+			<option key="--epsilon" value="0.005"/>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>A[] forall(i:id_t) forall(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross imply i == j under GoSafeLive</formula>
+			<comment>Mutual exclusion (no two trains in Cross at the same time) using Safe strategy.
+Expect YES, satisfied, there is no way for the trains to crash at Cross.</comment>
+		</query>
+		<query>
+			<formula>E[&lt;=200; 500] (max: Train(0).z) under GoSafeLive</formula>
+			<comment>Estimate the total Waiting Time of Train(0) under Safe.
+Expect ~155.8 time units, which is worse than 116.7 without strategy and 84.8 with GoFast.</comment>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// Learning Fast and Safe Controller</comment>
+		</query>
+		<query>
+			<formula>strategy GoSafeFast = minE(Train(0).z) [&lt;=200]: &lt;&gt; time&gt;=200 under GoSafeLive</formula>
+			<comment>LEARN SUB-STRATEGY of Safe that minimizes expected time until Train(0) is in Cross
+Expect success.
+The resulting strategy can be used only in SMC queries.</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>simulate [&lt;=200] {
+  Train(0).Safe + 2*Train(0).Appr + 3*Train(0).Stop + 4*Train(0).Start + 5*Train(0).Cross,
+  5+Train(1).Safe + 2*Train(1).Appr + 3*Train(1).Stop + 4*Train(1).Start + 5*Train(1).Cross,
+  10+Train(2).Safe + 2*Train(2).Appr + 3*Train(2).Stop + 4*Train(2).Start + 5*Train(2).Cross,
+  15+Train(3).Safe + 2*Train(3).Appr + 3*Train(3).Stop + 4*Train(3).Start + 5*Train(3).Cross,
+  21*exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)
+} under GoSafeFast</formula>
+			<comment>Simulate under GoFastSafe and display train location trajectory with collisions
+Expect plenty of progress for Train(0), less progress for other trains and no collisions.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000] (&lt;&gt; exists(i:id_t) exists(j:id_t) Train(i).Cross &amp;&amp; Train(j).Cross and (i != j)) under GoSafeFast</formula>
+			<comment>Probability of violating MUTEX under GoFastSafe.
+Expect &lt;0.5% with 99% confidence level.</comment>
+			<option key="--alpha" value="0.01"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula>E[&lt;=200; 500] (max: Train(0).z) under GoSafeFast</formula>
+			<comment>Estimate total Waiting Time of Train(0) under GoFastSafe.
+Expect 85.5 time units, which is just slightly worse than 83.8 using GoFast</comment>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>

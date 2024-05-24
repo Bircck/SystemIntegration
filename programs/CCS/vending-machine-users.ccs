@@ -1,0 +1,31 @@
+// Vending machine example
+
+// Definition of vending machine process
+VM := coin? . (askEsp? . VM1 + askAm? . VM2)
+VM1 := espCoffee! . VM
+VM2 := amCoffee! . VM
+
+// User requesting an espresso
+User1 := coin! . askEsp! . espCoffee? . 0
+
+// User requesting an americano
+User2 := coin! . askAm! . amCoffee? . 0
+
+// User who may choose to request any number of espressos,
+// and finally an americano
+User3 := coin! . (
+    i . askEsp! . espCoffee? . User3
+  + i . askAm! . amCoffee? . 0
+)
+
+// User who requests an espresso, but then expects an americano
+User4 := coin! . askEsp! . amCoffee? . 0
+
+///////////////////////////////////////////////////////////////
+// Examples of initial processes: uncomment only one
+
+// Initial process with the vending machine only
+VM
+
+// Initial process with the vending machine interacting with a user
+// (VM | User1) \ {coin, askEsp, askAm, espCoffee, amCoffee}

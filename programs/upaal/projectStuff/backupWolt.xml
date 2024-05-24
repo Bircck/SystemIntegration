@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+//ddriver
+chan order_delivered, HandOffOrder, DriveToRestaurant;
+chan D_Accepted, Send_D_Rqst, D_Declined;
+chan Update_W_OrderDelivered, Update_W_OrderPickedUp;
+
+//restaurant
+chan SendRqst_R, R_Declined, R_accepted, Prepare_food;
+//HandOffOrder;
+
+//customer
+chan search_for_food, Select_Rstrnt, Send_Order_W, ToC_R_Accepted, ToC_R_Declined;
+//R_Declined, R_accepted order_delivered?
+</declaration>
+	<template>
+		<name>DDriver</name>
+		<location id="id0" x="-170" y="0">
+			<name x="-255" y="-25">InitialD</name>
+		</location>
+		<location id="id1" x="17" y="0">
+			<name x="42" y="0">RecievedRequest</name>
+		</location>
+		<location id="id2" x="17" y="-93">
+			<name x="7" y="-127">Accepted</name>
+		</location>
+		<location id="id3" x="221" y="-187">
+			<name x="211" y="-221">PickedUpOrder</name>
+		</location>
+		<location id="id4" x="-246" y="-187">
+			<name x="-323" y="-229">Delivered</name>
+		</location>
+		<location id="id5" x="221" y="-93">
+			<name x="246" y="-102">AtRestaurant</name>
+		</location>
+		<location id="id6" x="8" y="-187">
+			<name x="-2" y="-221">WoltUpdatedPickedup</name>
+		</location>
+		<location id="id7" x="-246" y="-76">
+			<name x="-425" y="-85">WoltOrderFinished</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id8">
+			<source ref="id6"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-221" y="-212">order_delivered!</label>
+		</transition>
+		<transition id="id9">
+			<source ref="id4"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-238" y="-127">Update_W_OrderDelivered!</label>
+		</transition>
+		<transition id="id10">
+			<source ref="id3"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="8" y="-178">Update_W_OrderPickedUp!</label>
+		</transition>
+		<transition id="id11">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-93" y="76">D_Declined!</label>
+			<nail x="-59" y="76"/>
+		</transition>
+		<transition id="id12">
+			<source ref="id5"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="238" y="-161">HandOffOrder?</label>
+		</transition>
+		<transition id="id13">
+			<source ref="id2"/>
+			<target ref="id5"/>
+			<label kind="comments" x="34" y="-85">DriveToRestaurant</label>
+		</transition>
+		<transition id="id14">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="25" y="-42">D_Accepted!</label>
+		</transition>
+		<transition id="id15">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-119" y="-25">Send_D_Rqst?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Wolt</name>
+		<location id="id16" x="-425" y="0">
+			<name x="-501" y="-34">InitialW</name>
+		</location>
+		<location id="id17" x="-221" y="0">
+			<name x="-289" y="-34">RecievedC_Order</name>
+		</location>
+		<location id="id18" x="-66" y="0">
+			<name x="-127" y="-34">SendToRestaurant</name>
+		</location>
+		<location id="id19" x="255" y="93">
+			<name x="213" y="119">R_Has_Accepted</name>
+		</location>
+		<location id="id20" x="255" y="-144">
+			<name x="245" y="-178">Has_Send_D_Reqst</name>
+		</location>
+		<location id="id21" x="-119" y="-144">
+			<name x="-178" y="-187">D_Reqst_Accepted</name>
+		</location>
+		<location id="id22" x="-272" y="-144">
+			<name x="-332" y="-187">Order_Picked_Up</name>
+		</location>
+		<location id="id23" x="-425" y="-144">
+			<name x="-478" y="-187">OrderDelivered</name>
+		</location>
+		<location id="id24" x="-238" y="195">
+		</location>
+		<location id="id25" x="110" y="0">
+			<name x="100" y="-34">InformCustomer</name>
+		</location>
+		<init ref="id16"/>
+		<transition id="id26">
+			<source ref="id25"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="59" y="51">ToC_R_Accepted!</label>
+		</transition>
+		<transition id="id27">
+			<source ref="id18"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-48" y="4">R_accepted?</label>
+		</transition>
+		<transition id="id28">
+			<source ref="id24"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-450" y="119">ToC_R_Declined!</label>
+		</transition>
+		<transition id="id29">
+			<source ref="id18"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-153" y="127">R_Declined?</label>
+		</transition>
+		<transition id="id30">
+			<source ref="id22"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-476" y="-127">Update_W_OrderDelivered?</label>
+		</transition>
+		<transition id="id31">
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-289" y="-102">Update_W_OrderPickedUp?</label>
+		</transition>
+		<transition id="id32">
+			<source ref="id20"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="378" y="-50">D_Declined?</label>
+			<nail x="408" y="-8"/>
+		</transition>
+		<transition id="id33">
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-85" y="-136">D_Accepted?</label>
+		</transition>
+		<transition id="id34">
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="264" y="-25">Send_D_Rqst!</label>
+		</transition>
+		<transition id="id35">
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-195" y="8">SendRqst_R!</label>
+		</transition>
+		<transition id="id36">
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-374" y="8">Send_Order_W?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Restaurant</name>
+		<location id="id37" x="-246" y="0">
+			<name x="-331" y="-34">InitialR</name>
+		</location>
+		<location id="id38" x="-76" y="0">
+			<name x="-86" y="-34">RecivedOrder</name>
+		</location>
+		<location id="id39" x="119" y="0">
+			<name x="109" y="-34">Accepted</name>
+		</location>
+		<location id="id40" x="119" y="119">
+			<name x="144" y="93">PreparedFood</name>
+		</location>
+		<location id="id41" x="-76" y="119">
+			<name x="-86" y="85">HandedOff</name>
+		</location>
+		<init ref="id37"/>
+		<transition id="id42">
+			<source ref="id38"/>
+			<target ref="id37"/>
+			<label kind="synchronisation" x="-212" y="-110">R_Declined!</label>
+			<nail x="-170" y="-85"/>
+		</transition>
+		<transition id="id43">
+			<source ref="id37"/>
+			<target ref="id38"/>
+			<label kind="synchronisation" x="-203" y="-17">SendRqst_R?</label>
+		</transition>
+		<transition id="id44">
+			<source ref="id40"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="-34" y="127">HandOffOrder!</label>
+		</transition>
+		<transition id="id45">
+			<source ref="id39"/>
+			<target ref="id40"/>
+			<label kind="comments" x="136" y="51">Prepare_food</label>
+		</transition>
+		<transition id="id46">
+			<source ref="id38"/>
+			<target ref="id39"/>
+			<label kind="synchronisation" x="-59" y="8">R_accepted!</label>
+		</transition>
+	</template>
+	<template>
+		<name>Customer</name>
+		<location id="id47" x="-280" y="0">
+			<name x="-290" y="-34">InitialC</name>
+		</location>
+		<location id="id48" x="-93" y="0">
+			<name x="-103" y="-34">GoToWoltCom</name>
+		</location>
+		<location id="id49" x="93" y="0">
+			<name x="83" y="-34">ChoosenRestaurant</name>
+		</location>
+		<location id="id50" x="297" y="0">
+			<name x="287" y="-34">Ordered</name>
+		</location>
+		<location id="id51" x="-93" y="144">
+			<name x="-144" y="170">RecievedOrder</name>
+		</location>
+		<location id="id52" x="93" y="85">
+			<name x="68" y="102">Declined</name>
+		</location>
+		<location id="id53" x="297" y="144">
+			<name x="314" y="135">Accepted</name>
+		</location>
+		<init ref="id47"/>
+		<transition id="id54">
+			<source ref="id53"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="51" y="161">order_delivered?</label>
+		</transition>
+		<transition id="id55">
+			<source ref="id50"/>
+			<target ref="id53"/>
+			<label kind="synchronisation" x="314" y="68">ToC_R_Accepted?</label>
+		</transition>
+		<transition id="id56">
+			<source ref="id52"/>
+			<target ref="id49"/>
+			<label kind="comments" x="0" y="59">tryAgain</label>
+		</transition>
+		<transition id="id57">
+			<source ref="id50"/>
+			<target ref="id52"/>
+			<label kind="synchronisation" x="136" y="68">ToC_R_Declined?</label>
+		</transition>
+		<transition id="id58">
+			<source ref="id49"/>
+			<target ref="id50"/>
+			<label kind="synchronisation" x="127" y="0">Send_Order_W!</label>
+		</transition>
+		<transition id="id59">
+			<source ref="id48"/>
+			<target ref="id49"/>
+			<label kind="comments" x="-68" y="8">Select_Rstrnt!</label>
+		</transition>
+		<transition id="id60">
+			<source ref="id47"/>
+			<target ref="id48"/>
+			<label kind="comments" x="-263" y="8">search_for_food</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+//Process = Template();
+// List one or more processes to be composed into a system.
+//system Process;
+system Customer, Wolt, Restaurant, DDriver;</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>

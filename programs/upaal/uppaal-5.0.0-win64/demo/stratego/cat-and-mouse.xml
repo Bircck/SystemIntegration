@@ -1,0 +1,861 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.5//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_5.dtd'>
+<nta>
+	<declaration>/** 
+ * "Cat and Mouse" by Kim Guldstrand Larsen and Marius Mikučionis.
+ * The model is about a cat chasing a mouse in a maze with a narrow passage.
+ * Demonstrates the features of Stratego: 
+ *   symbolic and SMC queries, TIGA synthesis and optimization using learning.
+ * The system consists of four processes:
+ * - Cat tracks the position and possible moves for the cat.
+ * - Mouse tracks the position and possible moves for the mouse, 
+ *   has an extra narrow passage to Cheese, that is not available to Cat.
+ * - CatP models the cat player moves (up, left, down, right) with delay.
+ * - MouseP models the mouse player moves (up, left, down, right) with delay.
+ * The objective of the game is for Mouse to get to Cheese location and 
+ * avoid being cought by Cat (detected when positions are equal).
+ * Mouse is the player/controller with controllable movements.
+ * Cat is the opponent/environment with uncontrollable movements.
+ * The strategy synthesis and optimization queries achieve the specified 
+ * objectives by restricting controlable actions.
+ */
+const int CP = 2; // delay step size for Cat
+const int MP = 1; // delay step size for Mouse
+broadcast chan cu, cl, cd, cr; // cat: up, left, down, right
+broadcast chan mu, ml, md, mr; // mouse: up, left, down, right</declaration>
+	<template>
+		<name x="5" y="5">Cat</name>
+		<declaration>int s = 0;</declaration>
+		<location id="id0" x="34" y="-170">
+			<name x="24" y="-204">L1</name>
+		</location>
+		<location id="id1" x="-102" y="-170">
+			<name x="-112" y="-204">L0</name>
+		</location>
+		<location id="id2" x="-102" y="-34">
+			<name x="-136" y="-42">L4</name>
+		</location>
+		<location id="id3" x="170" y="-170">
+			<name x="160" y="-204">L2</name>
+		</location>
+		<location id="id4" x="306" y="-170">
+			<name x="297" y="-204">Cheese</name>
+		</location>
+		<location id="id5" x="306" y="-34">
+			<name x="297" y="-17">L6</name>
+		</location>
+		<location id="id6" x="170" y="-34">
+			<name x="161" y="-17">L5</name>
+		</location>
+		<location id="id7" x="170" y="102">
+			<name x="160" y="68">L9</name>
+		</location>
+		<location id="id8" x="34" y="102">
+			<name x="24" y="68">L8</name>
+		</location>
+		<location id="id9" x="-102" y="102">
+			<name x="-136" y="93">L7</name>
+		</location>
+		<location id="id10" x="-102" y="238">
+			<name x="-144" y="229">L10</name>
+		</location>
+		<location id="id11" x="34" y="238">
+			<name x="25" y="255">L11</name>
+		</location>
+		<location id="id12" x="170" y="238">
+			<name x="153" y="255">L12</name>
+		</location>
+		<location id="id13" x="306" y="238">
+			<name x="297" y="255">L13</name>
+		</location>
+		<init ref="id1"/>
+		<transition id="id14" controllable="false">
+			<source ref="id6"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="187" y="-119">cu?</label>
+			<label kind="assignment" x="187" y="-102">s=2</label>
+			<nail x="187" y="-68"/>
+			<nail x="187" y="-136"/>
+		</transition>
+		<transition id="id15" controllable="false">
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="205" y="-34">cl?</label>
+			<label kind="assignment" x="238" y="-34">s=5</label>
+			<nail x="280" y="-17"/>
+			<nail x="195" y="-17"/>
+		</transition>
+		<transition id="id16" controllable="false">
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="204" y="238">cr?</label>
+			<label kind="assignment" x="238" y="238">s=13</label>
+			<nail x="204" y="255"/>
+			<nail x="272" y="255"/>
+		</transition>
+		<transition id="id17" controllable="false">
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="68" y="-170">cl?</label>
+			<label kind="assignment" x="102" y="-170">s=1</label>
+			<nail x="136" y="-153"/>
+			<nail x="68" y="-153"/>
+		</transition>
+		<transition id="id18" controllable="false">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-68" y="-170">cl?</label>
+			<label kind="assignment" x="-34" y="-170">s=0</label>
+			<nail x="0" y="-153"/>
+			<nail x="-68" y="-153"/>
+		</transition>
+		<transition id="id19" controllable="false">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-85" y="-119">cd?</label>
+			<label kind="assignment" x="-85" y="-102">s=4</label>
+			<nail x="-85" y="-136"/>
+			<nail x="-85" y="-68"/>
+		</transition>
+		<transition id="id20" controllable="false">
+			<source ref="id2"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-85" y="17">cd?</label>
+			<label kind="assignment" x="-85" y="34">s=7</label>
+			<nail x="-85" y="0"/>
+			<nail x="-85" y="68"/>
+		</transition>
+		<transition id="id21" controllable="false">
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-85" y="153">cd?</label>
+			<label kind="assignment" x="-85" y="170">s=10</label>
+			<nail x="-85" y="136"/>
+			<nail x="-85" y="204"/>
+		</transition>
+		<transition id="id22" controllable="false">
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-68" y="221">cr?</label>
+			<label kind="assignment" x="-34" y="221">s=11</label>
+		</transition>
+		<transition id="id23" controllable="false">
+			<source ref="id8"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="51" y="153">cd?</label>
+			<label kind="assignment" x="51" y="170">s=11</label>
+			<nail x="51" y="136"/>
+			<nail x="51" y="204"/>
+		</transition>
+		<transition id="id24" controllable="false">
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-68" y="102">cl?</label>
+			<label kind="assignment" x="-34" y="102">s=7</label>
+			<nail x="0" y="119"/>
+			<nail x="-76" y="119"/>
+		</transition>
+		<transition id="id25" controllable="false">
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="68" y="-187">cr?</label>
+			<label kind="assignment" x="102" y="-187">s=2</label>
+		</transition>
+		<transition id="id26" controllable="false">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-68" y="-187">cr?</label>
+			<label kind="assignment" x="-34" y="-187">s=1</label>
+		</transition>
+		<transition id="id27" controllable="false">
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-136" y="-119">cu?</label>
+			<label kind="assignment" x="-136" y="-102">s=0</label>
+		</transition>
+		<transition id="id28" controllable="false">
+			<source ref="id9"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-136" y="17">cu?</label>
+			<label kind="assignment" x="-136" y="34">s=4</label>
+		</transition>
+		<transition id="id29" controllable="false">
+			<source ref="id11"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="0" y="153">cu?</label>
+			<label kind="assignment" x="0" y="170">s=8</label>
+		</transition>
+		<transition id="id30" controllable="false">
+			<source ref="id12"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="170" y="153">cu?</label>
+			<label kind="assignment" x="170" y="170">s=9</label>
+		</transition>
+		<transition id="id31" controllable="false">
+			<source ref="id3"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="144" y="-119">cd?</label>
+			<label kind="assignment" x="144" y="-102">s=5</label>
+		</transition>
+		<transition id="id32" controllable="false">
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="204" y="-187">cl?</label>
+			<label kind="assignment" x="238" y="-187">s=2</label>
+		</transition>
+		<transition id="id33" controllable="false">
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="306" y="-119">cu?</label>
+			<label kind="assignment" x="306" y="-102">s=3</label>
+		</transition>
+		<transition id="id34" controllable="false">
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="204" y="-51">cr?</label>
+			<label kind="assignment" x="238" y="-51">s=6</label>
+		</transition>
+		<transition id="id35" controllable="false">
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="68" y="85">cl?</label>
+			<label kind="assignment" x="102" y="85">s=8</label>
+		</transition>
+		<transition id="id36" controllable="false">
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-68" y="85">cr?</label>
+			<label kind="assignment" x="-34" y="85">s=8</label>
+		</transition>
+		<transition id="id37" controllable="false">
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-136" y="153">cu?</label>
+			<label kind="assignment" x="-136" y="170">s=7</label>
+		</transition>
+		<transition id="id38" controllable="false">
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-68" y="238">cl?</label>
+			<label kind="assignment" x="-34" y="238">s=10</label>
+			<nail x="8" y="255"/>
+			<nail x="-76" y="255"/>
+		</transition>
+		<transition id="id39" controllable="false">
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="68" y="221">cr?</label>
+			<label kind="assignment" x="102" y="221">s=12</label>
+		</transition>
+		<transition id="id40" controllable="false">
+			<source ref="id13"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="204" y="221">cl?</label>
+			<label kind="assignment" x="238" y="221">s=12</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Mouse</name>
+		<declaration>int s = 13;</declaration>
+		<location id="id41" x="34" y="-170">
+			<name x="24" y="-204">L1</name>
+		</location>
+		<location id="id42" x="-102" y="-170">
+			<name x="-112" y="-204">L0</name>
+		</location>
+		<location id="id43" x="-102" y="-34">
+			<name x="-136" y="-42">L4</name>
+		</location>
+		<location id="id44" x="170" y="-170">
+			<name x="160" y="-204">L2</name>
+		</location>
+		<location id="id45" x="306" y="-170">
+			<name x="280" y="-204">Cheese</name>
+		</location>
+		<location id="id46" x="306" y="-34">
+			<name x="297" y="-17">L6</name>
+		</location>
+		<location id="id47" x="170" y="-34">
+			<name x="136" y="-42">L5</name>
+		</location>
+		<location id="id48" x="170" y="102">
+			<name x="187" y="93">L9</name>
+		</location>
+		<location id="id49" x="34" y="102">
+			<name x="24" y="68">L8</name>
+		</location>
+		<location id="id50" x="-102" y="102">
+			<name x="-136" y="93">L7</name>
+		</location>
+		<location id="id51" x="-102" y="238">
+			<name x="-144" y="229">L10</name>
+		</location>
+		<location id="id52" x="34" y="238">
+			<name x="25" y="255">L11</name>
+		</location>
+		<location id="id53" x="170" y="238">
+			<name x="153" y="255">L12</name>
+		</location>
+		<location id="id54" x="306" y="238">
+			<name x="296" y="204">L13</name>
+		</location>
+		<init ref="id54"/>
+		<transition id="id55">
+			<source ref="id47"/>
+			<target ref="id44"/>
+			<label kind="synchronisation" x="187" y="-118">mu?</label>
+			<label kind="assignment" x="187" y="-101">s=2</label>
+			<nail x="187" y="-59"/>
+			<nail x="187" y="-144"/>
+		</transition>
+		<transition id="id56">
+			<source ref="id46"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="204" y="-34">ml?</label>
+			<label kind="assignment" x="238" y="-34">s=5</label>
+			<nail x="280" y="-17"/>
+			<nail x="195" y="-17"/>
+		</transition>
+		<transition id="id57">
+			<source ref="id53"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="204" y="238">mr?</label>
+			<label kind="assignment" x="238" y="238">s=13</label>
+			<nail x="204" y="255"/>
+			<nail x="272" y="255"/>
+		</transition>
+		<transition id="id58">
+			<source ref="id44"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="68" y="-170">ml?</label>
+			<label kind="assignment" x="102" y="-170">s=1</label>
+			<nail x="136" y="-153"/>
+			<nail x="68" y="-153"/>
+		</transition>
+		<transition id="id59">
+			<source ref="id41"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-68" y="-170">ml?</label>
+			<label kind="assignment" x="-34" y="-170">s=0</label>
+			<nail x="0" y="-153"/>
+			<nail x="-68" y="-153"/>
+		</transition>
+		<transition id="id60">
+			<source ref="id42"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-85" y="-119">md?</label>
+			<label kind="assignment" x="-85" y="-102">s=4</label>
+			<nail x="-85" y="-136"/>
+			<nail x="-85" y="-68"/>
+		</transition>
+		<transition id="id61">
+			<source ref="id43"/>
+			<target ref="id50"/>
+			<label kind="synchronisation" x="-85" y="17">md?</label>
+			<label kind="assignment" x="-85" y="34">s=7</label>
+			<nail x="-85" y="0"/>
+			<nail x="-85" y="68"/>
+		</transition>
+		<transition id="id62">
+			<source ref="id50"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="-85" y="153">md?</label>
+			<label kind="assignment" x="-85" y="170">s=10</label>
+			<nail x="-85" y="136"/>
+			<nail x="-85" y="204"/>
+		</transition>
+		<transition id="id63">
+			<source ref="id51"/>
+			<target ref="id52"/>
+			<label kind="synchronisation" x="-68" y="221">mr?</label>
+			<label kind="assignment" x="-34" y="221">s=11</label>
+		</transition>
+		<transition id="id64">
+			<source ref="id49"/>
+			<target ref="id52"/>
+			<label kind="synchronisation" x="51" y="153">md?</label>
+			<label kind="assignment" x="51" y="170">s=11</label>
+			<nail x="51" y="136"/>
+			<nail x="51" y="204"/>
+		</transition>
+		<transition id="id65">
+			<source ref="id47"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="136" y="17">md?</label>
+			<label kind="assignment" x="136" y="34">s=9</label>
+			<label kind="comments" x="221" y="25">Narrow passage
+only mice can use.</label>
+		</transition>
+		<transition id="id66">
+			<source ref="id48"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="187" y="17">mu?</label>
+			<label kind="assignment" x="187" y="34">s=5</label>
+			<nail x="187" y="76"/>
+			<nail x="187" y="0"/>
+		</transition>
+		<transition id="id67">
+			<source ref="id49"/>
+			<target ref="id50"/>
+			<label kind="synchronisation" x="-68" y="102">ml?</label>
+			<label kind="assignment" x="-34" y="102">s=7</label>
+			<nail x="0" y="119"/>
+			<nail x="-76" y="119"/>
+		</transition>
+		<transition id="id68">
+			<source ref="id41"/>
+			<target ref="id44"/>
+			<label kind="synchronisation" x="68" y="-187">mr?</label>
+			<label kind="assignment" x="102" y="-187">s=2</label>
+		</transition>
+		<transition id="id69">
+			<source ref="id42"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="-68" y="-187">mr?</label>
+			<label kind="assignment" x="-34" y="-187">s=1</label>
+		</transition>
+		<transition id="id70">
+			<source ref="id43"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-136" y="-119">mu?</label>
+			<label kind="assignment" x="-136" y="-102">s=0</label>
+		</transition>
+		<transition id="id71">
+			<source ref="id50"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-136" y="17">mu?</label>
+			<label kind="assignment" x="-136" y="34">s=4</label>
+		</transition>
+		<transition id="id72">
+			<source ref="id52"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="0" y="153">mu?</label>
+			<label kind="assignment" x="0" y="170">s=8</label>
+		</transition>
+		<transition id="id73">
+			<source ref="id53"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="170" y="153">mu?</label>
+			<label kind="assignment" x="170" y="170">s=9</label>
+		</transition>
+		<transition id="id74">
+			<source ref="id44"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="144" y="-119">md?</label>
+			<label kind="assignment" x="144" y="-102">s=5</label>
+		</transition>
+		<transition id="id75">
+			<source ref="id45"/>
+			<target ref="id44"/>
+			<label kind="synchronisation" x="204" y="-187">ml?</label>
+			<label kind="assignment" x="238" y="-187">s=2</label>
+		</transition>
+		<transition id="id76">
+			<source ref="id46"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="306" y="-119">mu?</label>
+			<label kind="assignment" x="306" y="-102">s=3</label>
+		</transition>
+		<transition id="id77">
+			<source ref="id47"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="204" y="-51">mr?</label>
+			<label kind="assignment" x="238" y="-51">s=6</label>
+		</transition>
+		<transition id="id78">
+			<source ref="id48"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="68" y="85">ml?</label>
+			<label kind="assignment" x="102" y="85">s=8</label>
+		</transition>
+		<transition id="id79">
+			<source ref="id50"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-68" y="85">mr?</label>
+			<label kind="assignment" x="-34" y="85">s=8</label>
+		</transition>
+		<transition id="id80">
+			<source ref="id51"/>
+			<target ref="id50"/>
+			<label kind="synchronisation" x="-136" y="153">mu?</label>
+			<label kind="assignment" x="-136" y="170">s=7</label>
+		</transition>
+		<transition id="id81">
+			<source ref="id52"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="-68" y="238">ml?</label>
+			<label kind="assignment" x="-34" y="238">s=10</label>
+			<nail x="8" y="255"/>
+			<nail x="-76" y="255"/>
+		</transition>
+		<transition id="id82">
+			<source ref="id52"/>
+			<target ref="id53"/>
+			<label kind="synchronisation" x="68" y="221">mr?</label>
+			<label kind="assignment" x="102" y="221">s=12</label>
+		</transition>
+		<transition id="id83">
+			<source ref="id54"/>
+			<target ref="id53"/>
+			<label kind="synchronisation" x="204" y="221">ml?</label>
+			<label kind="assignment" x="238" y="221">s=12</label>
+		</transition>
+	</template>
+	<template>
+		<name>CatP</name>
+		<declaration>clock x;</declaration>
+		<location id="id84" x="0" y="68">
+			<label kind="invariant" x="-25" y="85">x&lt;=CP</label>
+		</location>
+		<location id="id85" x="136" y="0">
+			<urgent/>
+		</location>
+		<branchpoint id="id86" x="136" y="68"/>
+		<init ref="id84"/>
+		<transition id="id87" controllable="false">
+			<source ref="id85"/>
+			<target ref="id86"/>
+		</transition>
+		<transition id="id88">
+			<source ref="id86"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="35" y="76">cl!</label>
+			<label kind="probability" x="76" y="76">1</label>
+			<nail x="102" y="93"/>
+			<nail x="34" y="93"/>
+		</transition>
+		<transition id="id89">
+			<source ref="id86"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="35" y="60">cd!</label>
+			<label kind="probability" x="76" y="59">1</label>
+			<nail x="102" y="77"/>
+			<nail x="34" y="77"/>
+		</transition>
+		<transition id="id90">
+			<source ref="id86"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="35" y="42">cr!</label>
+			<label kind="probability" x="76" y="42">1</label>
+			<nail x="102" y="59"/>
+			<nail x="34" y="59"/>
+		</transition>
+		<transition id="id91">
+			<source ref="id86"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="35" y="25">cu!</label>
+			<label kind="probability" x="76" y="25">1</label>
+			<nail x="102" y="42"/>
+			<nail x="34" y="42"/>
+		</transition>
+		<transition id="id92" controllable="false">
+			<source ref="id84"/>
+			<target ref="id85"/>
+			<label kind="guard" x="34" y="-17">x&gt;=CP</label>
+			<label kind="assignment" x="34" y="0">x=0</label>
+			<nail x="0" y="0"/>
+		</transition>
+	</template>
+	<template>
+		<name>MouseP</name>
+		<declaration>clock x;</declaration>
+		<location id="id93" x="0" y="-34">
+			<urgent/>
+		</location>
+		<location id="id94" x="102" y="-34">
+			<label kind="invariant" x="85" y="-17">x&lt;=MP</label>
+		</location>
+		<init ref="id94"/>
+		<transition id="id95" controllable="false">
+			<source ref="id94"/>
+			<target ref="id93"/>
+			<label kind="guard" x="17" y="-110">x&gt;=MP</label>
+			<label kind="assignment" x="18" y="-93">x=0</label>
+			<nail x="102" y="-93"/>
+			<nail x="0" y="-93"/>
+		</transition>
+		<transition id="id96">
+			<source ref="id93"/>
+			<target ref="id94"/>
+			<label kind="synchronisation" x="35" y="-76">mu!</label>
+			<nail x="34" y="-59"/>
+			<nail x="68" y="-59"/>
+		</transition>
+		<transition id="id97">
+			<source ref="id93"/>
+			<target ref="id94"/>
+			<label kind="synchronisation" x="35" y="-59">mr!</label>
+			<nail x="34" y="-42"/>
+			<nail x="68" y="-42"/>
+		</transition>
+		<transition id="id98">
+			<source ref="id93"/>
+			<target ref="id94"/>
+			<label kind="synchronisation" x="35" y="-42">md!</label>
+			<nail x="34" y="-25"/>
+			<nail x="68" y="-25"/>
+		</transition>
+		<transition id="id99">
+			<source ref="id93"/>
+			<target ref="id94"/>
+			<label kind="synchronisation" x="34" y="-25">ml!</label>
+			<nail x="34" y="-8"/>
+			<nail x="68" y="-8"/>
+		</transition>
+	</template>
+	<system>clock time; // used in minimization queries
+
+system Cat, Mouse, CatP, MouseP;
+</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment>// GOAL: can Mouse reach Cheese?</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Mouse.Cheese                                // Can Mouse reach Cheese?</formula>
+			<comment>Expect YES, satisfied, Mouse can reach Cheese.
+The query also loads a witness trace into Symbolic Simulator.</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Mouse.s }                // Where is Mouse most of the time?</formula>
+			<comment>Expect trajectory all over entire maze, locations 0 through 12.
+Inspect the simulations by right-clicking the query.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 100] { Mouse.s } : 1 : Mouse.Cheese   // Show trajectory of Mouse raching Cheese</formula>
+			<comment>Expect a trajectory through random locations eventually reaching value 3 (Cheese location).</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Mouse.Cheese)                     // Probability of Mouse reaching Cheese?</formula>
+			<comment>Expect close to 100%, i.e. given enough time Mouse will eventually reach Cheese.
+Cumulative Probability Distribution (right-click on the query) shows that it takes about 147 time units on average.
+The query also provides a trace for Concrete Simulator to step through.</comment>
+			<option key="--alpha" value="0.005"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// OPTIMIZE: strategy for Mouse to reach Cheese as Fast as possible</comment>
+		</query>
+		<query>
+			<formula>strategy Fast = minE(time) [&lt;=100] { Mouse.location } -&gt; {} : &lt;&gt; Mouse.Cheese  // Minimize expected time for Mouse reaching Cheese</formula>
+			<comment>Expect success.
+The resulting strategy can be used in SMC and learning queries.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Mouse.s } under Fast     // Where is Mouse while using Fast strategy?</formula>
+			<comment>Expect homing to and motion between locations 2, 3, 5, 6 around Cheese at 3.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=100](&lt;&gt; Mouse.Cheese) under Fast &gt;= Pr[&lt;=100](&lt;&gt; Mouse.Cheese)  // Compare probabilities of Mouse reaching Cheese with and without Fast</formula>
+			<comment>Expect YES, satisfied.
+The comparison plot shows 0.5 before the first 5 time units (could not distinguish as Mouse is never at Cheese in both cases)
+and then 1 (probability with Fast is strictly greater than without).</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=100](&lt;&gt; Mouse.Cheese) under Fast           // Probability of Mouse reaching Cheese under Fast</formula>
+			<comment>Expect 100%.
+Cumulative Probability Distribution shows that Mouse reaches Cheese always in exactly 5 time units.</comment>
+			<option key="--alpha" value="0.005"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// Evaluate SAFETY</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Cat.Cheese                                  // Can Cat get to Cheese?</formula>
+			<comment>Expect YES, satisfied, Cat can get to Cheese too.
+A witness trace is loaded into Symbolic Simulator.</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Cat.s == Mouse.s                            // Can Cat catch Mouse?</formula>
+			<comment>Expect YES, satisfied.
+A witness trace is loaded into Symbolic Simulator.</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Cat.s }                  // Where is Cat most of the time?</formula>
+			<comment>Expect the location to vary all over the maze, values 0 through 12.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100] { 13*(Cat.s==Mouse.s), Cat.s, Mouse.s }   // Cat and Mouse trajectories with their collisions</formula>
+			<comment>Expect trajectories of Cat and Mouse and sometimes collision marked in red reaching value 13.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 100] { 13*(Cat.s==Mouse.s), Cat.s, Mouse.s } : 1 : Cat.s==Mouse.s     // Find 1 trajectory where Mouse is cought</formula>
+			<comment>Expect one trajectory where Cat and Mouse locations collide definately</comment>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Cat.s == Mouse.s)                 // Probability of Cat catching Mouse?</formula>
+			<comment>Expect probability close to 100%
+Cumulative Probability Distribution (right-click on the query) shows Mouse is cought in 44.3 time units on average.
+A concrete trace leading to collision is loaded into Concrete Simulator.</comment>
+			<option key="--alpha" value="0.005"/>
+			<option key="--epsilon" value="0.005"/>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// Evaluate SAFETY of Fast strategy</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Cat.s } under Fast       // Where is Cat when Mouse uses Fast strategy?</formula>
+			<comment>Expect trajectories all over the maze, similarly to when Mouse is not using Fast strategy.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100] { 13*(Cat.s==Mouse.s), Cat.s, Mouse.s } under Fast // Show trajectories of Cat and Mouse and their collisions</formula>
+			<comment>Expect to see trajectories of Cat and Mouse locations and sometimes red getting to 13 when they collide.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 100] { 13*(Cat.s==Mouse.s), Cat.s, Mouse.s } : 1 : Cat.s==Mouse.s under Fast     // Find how Mouse is cought under Fast</formula>
+			<comment>Expect Mouse to home-in to and stay around Cheese, while Cat moves randomly and eventually arrives to location equal to Mouse's.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Cat.s == Mouse.s) under Fast &gt;= Pr[&lt;=1000](&lt;&gt; Cat.s == Mouse.s)  // Is Fast strategy safer than no strategy?</formula>
+			<comment>Expect success.
+The comparison plot shows 1 in the beginning -- Fast strategy is safer than no strategy in the very beginning, 
+but later 0 -- less safe later,
+and eventually 0.5 -- the probabilities could not be distinguished.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Cat.s == Mouse.s) under Fast      // Probability of Cat catching Mouse using Fast strategy?</formula>
+			<comment>Expect close to 100%.
+Cumulative Proability Distribution plot shows that it takes 135.8 time units on average
+(takes longer than when Mouse is not rushing to Cheese)</comment>
+			<option key="--alpha" value="0.005"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// SAFETY strategy for Mouse to avoid Cat</comment>
+		</query>
+		<query>
+			<formula>strategy Safe = control: A[] Cat.s != Mouse.s   // Can Mouse avoid Cat?</formula>
+			<comment>Expect success.
+The resulting strategy can be used in symbolic (E&lt;&gt;, A[] etc), SMC and learning queries.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Cat.s } under Safe       // Where is Cat most of the time under Safe?</formula>
+			<comment>Expect trajectory all over the maze</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Mouse.s } under Safe     // Where is Mouse most of the time under Safe?</formula>
+			<comment>Expect trajectory all over the maze</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 104] { 14*(Cat.s==Mouse.s), Cat.s, Mouse.s } : 1 : Cat.s==Mouse.s under Safe     // Find trajectory of Cat catching Mouse using Safe strategy</formula>
+			<comment>Expect failure: such trajectory cannot be found.
+Also the probability is estimated below 5% with 99% confidence level.</comment>
+			<option key="--alpha" value="0.01"/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=100](&lt;&gt; Cat.s == Mouse.s) under Safe       // Probability of Cat catching Mouse using Safe?</formula>
+			<comment>Expect probability to be below 0.5% with 99% confidence.</comment>
+			<option key="--alpha" value="0.01"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula>A[] Cat.s != Mouse.s under Safe                 // Can Mouse avoid Cat by using Safe strategy?</formula>
+			<comment>Expect YES, satisfied, i.e. there is absolutely no way for Cat to catch Mouse using Safe strategy.</comment>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// Evaluate PERFORMANCE of the Safe strategy</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Mouse.Cheese) under Safe &gt;= Pr[&lt;=1000](&lt;&gt; Mouse.Cheese)  // Is Mouse better at reaching Cheese with or without Safe strategy?</formula>
+			<comment>Expect YES, the probability of Mouse reaching Cheese is greater with Safe strategy.
+The Comparison plot shows 1 up to time 650 -- Safe strategy is better than no strategy, 
+but later it shows 0.5 -- it could not distinguish the probabilities from that point.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Mouse.Cheese) under Fast &gt;= Pr[&lt;=1000](&lt;&gt; Mouse.Cheese) under Safe // Is Mouse better at reaching Cheese with Fast or Safe strategy?</formula>
+			<comment>Expect YES, the probability of Mouse reaching Cheese greater with Fast than Safe strategy.
+The Comparison plot shows 1 up to time 470 -- Fast strategy is better than Safe strategy, 
+and later it shows 0.5 -- it could not distinguish the probabilities from that point.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Mouse.Cheese) under Safe          // Probability of Mouse reaching Cheese using Safe</formula>
+			<comment>Expect probability close to 100%.
+Cumulative Probability Distribution shows that Mouse reaches Cheese within 124 time units on average
+-- better than without strategy, but nowhere near the result of using Fast strategy (5 time units).</comment>
+			<option key="--alpha" value="0.005"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment>// SAFE &amp; OPTIMAL: get to Cheese quick without getting cought</comment>
+		</query>
+		<query>
+			<formula>strategy SafeFast = minE(time) [&lt;=100] { Cat.location, Mouse.location } -&gt; {} : &lt;&gt; Mouse.Cheese under Safe // Optimize Safe strategy for Mouse to reach Cheese in minimal time.</formula>
+			<comment>Expect success.
+The resulting strategy can be used only in SMC queries.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Cat.s } under SafeFast      // Where is Cat under SafeFast?</formula>
+			<comment>Expect the location trajectory to be all over the maze from 0 through 12.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 20] { Mouse.s } under SafeFast    // Where is Mouse under SafeFast?</formula>
+			<comment>Expect the location trajectory to home-in to 2,3,5,6 (just like Fast), but occasionally get distracted to other places of the maze.</comment>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100] { Cat.s, Mouse.s } under SafeFast // Cat and Mouse trajectories under SafeFast</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>simulate [&lt;=100; 104] { 13*(Cat.s==Mouse.s), Cat.s, Mouse.s } : 1 : Cat.s==Mouse.s under SafeFast // Find trajectory of Cat catching Mouse using SafeFast</formula>
+			<comment>Expect failure as such trace does ont exist, and the estimated probability is less than 5% with 99% confidence level.</comment>
+			<option key="--alpha" value="0.01"/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=1000](&lt;&gt; Cat.s == Mouse.s) under SafeFast     // Probability of Cat catching Mouse using SafeFast</formula>
+			<comment>Expect probability less than 1% with 99% confidence level -- virtually impossible.</comment>
+			<option key="--alpha" value="0.01"/>
+			<option key="--epsilon" value="0.01"/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=100](&lt;&gt; Mouse.Cheese) under SafeFast &gt;= Pr[&lt;=100](&lt;&gt; Mouse.Cheese) under Fast  // Which SafeFast or Fast is better for reaching Cheese?</formula>
+			<comment>Expect YES, satisfied.
+The comparison plot shows 0.5 everywhere, meaning that it could not distinguish the probabilities, 
+i.e. probabilities are approximately equal for entire time duration.</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=100](&lt;&gt; Mouse.Cheese) under SafeFast          // Probability of Mouse reaching Cheese using SafeFast</formula>
+			<comment>Expect probability close to 100%.
+Cumulative Probability Distribution shows that it always takes 5 time units -- as good result as using Fast strategy.</comment>
+			<option key="--alpha" value="0.005"/>
+			<option key="--epsilon" value="0.005"/>
+		</query>
+	</queries>
+</nta>

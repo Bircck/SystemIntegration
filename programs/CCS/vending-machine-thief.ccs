@@ -1,0 +1,23 @@
+// Vending machine with thief
+
+// Process definitions
+
+VM := coin? . VMChoice
+
+VMChoice := (
+    askEsp? . espCoffee! . VM
+  + askAm? . amCoffee! . VM
+  + cancel? . areYouSure! . (
+      yes? . returnCoin! . VM
+    + no? . VMChoice
+  )
+)
+
+User := coin! . askEsp! . espCoffee? . User
+
+Thief := espCoffee?
+
+// Initial process
+
+((VM | User) \ {coin, askEsp, espCoffee, askAm, amCoffe, cancel}) | Thief
+
